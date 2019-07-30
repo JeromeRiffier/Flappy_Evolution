@@ -3,6 +3,7 @@ let total_cobaye = 150;
 let best_score_storage = [];
 let obstacles = [];
 let players = [];   // #Birds[] toi-même tu sais^^
+let mutation_rate = 0.1;
 let saved_players = [];
 let base_hole_size = 100;
 let base_space_bewteen = 120;
@@ -106,7 +107,7 @@ class player {
             this.brain.dispose();
         }
         mutate() {
-            this.brain.mutate(0.1);
+            this.brain.mutate(mutation_rate);
         }
         //Fin de ZONE IA-----    !!!!!!!!!!!!!!!!!!!!
         
@@ -246,6 +247,11 @@ class obtacle {
         this.x -= this.vitesse ;    
     }
     show (){
+        noStroke()
+        fill(30,235,30)
+        rect(this.x+5, this.up_y, this.width+5, this.up_height+5)
+        rect(this.x+this.width, this.down_y+5, 10, this.down_height+5)
+
         fill(50, 255, 50)
         rect(this.x, this.up_y, this.width, this.up_height)
         rect(this.x, this.down_y, this.width, this.down_height)

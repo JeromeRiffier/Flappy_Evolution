@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+    <title>Project Flappy IA</title>
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="magic.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed&display=swap" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <script type="text/javascript" src="game/sketch.js"></script>
+    <script type="text/javascript" src="game/evolution.js"></script>
+    <script type="text/javascript" src="P5/p5.js"></script>
+    <script type="text/javascript" src="tensorflow.js/tf.js"></script>
+
+</head>
+
+<body>
+    <div class="titre">
+        <h1>Projet Flappy Evolution:</h1>
+    </div>
+    <div class="info" onClick="toggle_info()">
+        <p class='a show'>
+            - Ce projet consite a découvrir les bases du machine learning via la neuro-évolution. </br>
+            - A chaque generation on genere 150 joueurs. La premiere generation et configuré de façon aléatoire.</br>
+            - Puis a chaque nouvelle generation, on selectionne le meilleur joueurs pour le dupliquer 150 fois.</br>
+            - Enfin on fait "muter" ces configuration aléatoirement (dans l'orde d'environ 1%).</br>
+            - Le meilleur joueur du tour precedent est cloné a l'identique et s'affiche en rouge</br>
+            - Si vous tentez de vous battre contre l'ia, le meilleur joueur de la generation precedente sera selectionné. Si vous ête contre la premiere generation le jeux selectionnera un joueur aleatoire</br>
+        </p>
+        <p class="b">
+            - Ce projet a entierement été codé en JS, Les librairies utilisé sont <bold>P5.JS</bold> pour la creation du jeux</br>
+            - Ainsi que <bold>TensorFlow.js</bold> pour la conception des reseaux neuraux</br>
+            - Les reseaux sont constitué de 3 couches utilisant respectivement 5, 8 et 2 neurones.</br>
+            - La premiere récupère en input : la postition et la vitesse vertical du joueurs, la position du trous dans le mur le plu proche ainsi que ça distance et sa vitesse.</br>
+            - La seconde et la couche "caché", constitué de 8 neurones dense (cf: chaque neuronnes et connecté a tout les autres des couche precedentes et suivante).</br>
+            - La derniere et constitué de 2 output, si le premier input et plus grand que le suivant alors le joueur "appuis" sur le bouton "up".
+        </p>
+    </div>
+    <div class="stats">
+        <table>
+            <tr>
+                <th>
+                    Gen
+                </th>
+                <th>
+                    Meilleur score
+                </th>
+                <th>
+                    Progression meilleur</br>
+                    / tour precedent
+                </th>
+                <th>
+                    Progression meilleur</br>
+                    / depart
+                </th>
+                <th>
+                    Score moyen
+                </th>
+                <th>
+                    Progression moyenne</br>
+                    / tour precedent
+                </th>
+                <th>
+                    Progression moyenne</br>
+                    / depart
+                </th>
+            </tr>
+              
+        </table>
+    </div>
+    <div class="controls">
+        <div class="col">
+                <button type="start" onclick="playPause()">Play / Pause</button></br>
+                <button type="reset" onclick="factory_reset()">Recommencer</button></br>
+                <button onclick="battleHumanIa()">Sauver le meilleur / Humain VS IA</button>
+            </div>
+            <div class="col" style="text-align: left;">
+                <span>Nombre de cobailles: </span><input id="nbr"type="text" placeHolder ='' ></br>
+                <div class="dif"><span>Facile:</span><input type="radio" name="difficulty" value="easy"> <span>Medium:</span><input type="radio" name="difficulty" value="medium"> <span>Difficile:</span><input type="radio" name="difficulty" value="hard"></div>
+                <button onclick="apply()">Appliquer</button>
+        </div>
+    </div>
+</body>
+    <script>
+    //Script en rapport avec l'interface de la page 
+        $('#nbr').attr('placeholder', total_cobaye);
+        //Gestion affichage des stat's
+        function actualise_stat (gen, best_score, average_score){
+            var progression = [];
+            if(gen >0){
+                var progression = calculate_progression(best_score, average_score);
+            }else{
+                progression[0] = 0;
+                progression[1] = 0;
+                progression[2] = 0;
+                progression[3] = 0;
+            }
+            //Ajoute 1 ligne au tableau des statistique 
+            var data = {key1: gen, key2: best_score, key3: progression[0]+'%',key4: progression[1]+'%', key5: int(average_score), key6:progression[2]+'%', key7:progression[3]+'%'};
+
+            html_new_line = '<tr>';
+                for (var key in data) {
+                html_new_line += '<td>' + data[key] + '</td>';
+                }
+            html_new_line += '</tr>';
+            $('table').append(html_new_line)
+        }
+        function calculate_progression (best_score, average_score){
+            var last_best = $("table tr:last td:eq(1)").html()
+            var first_best = $("table tr:eq(1) td:eq(1)").html()
+
+            var last_avg = $("table tr:last td:eq(4)").html()
+            var first_avg = $("table tr:eq(1) td:eq(4)").html()
+
+            var prog_best = (100/last_best)*best_score
+            var prog_best_from_start = (100/first_best)*best_score
+
+            var prog_avg = (100/last_avg)*average_score
+            var prog_avg_from_start = (100/first_avg)*average_score
+
+            return [int(prog_best),int(prog_best_from_start), int(prog_avg),int(prog_avg_from_start)];
+        }
+
+        //Gestion des boutons de controles
+        function playPause(){
+            running = !running
+        }
+        function checkRadio(){
+            $('input[type=radio]:first').prop("checked", true);
+        }
+        
+        function apply(){
+            //Le nombre de caboye voulus
+            if($('#nbr').val() > 0){
+                total_cobaye = $('#nbr').val();
+            }else{
+                total_cobaye =150;
+            }
+            //La difficulté voulu (varie entre 0 et 2)
+            var difficulty;
+            if ( $('input[type=radio]:checked').val()=="easy") {
+                difficulty = 0
+            }else if ( $('input[type=radio]:checked').val()=='medium') {
+                difficulty = 1
+            }else if ( $('input[type=radio]:checked').val()=='hard') {
+                difficulty = 2
+            }
+            $('table tr > td').remove(); 
+            full_reset(total_cobaye, difficulty);
+        }
+
+        function factory_reset(){
+            $('table tr > td').remove(); 
+            full_reset();
+        }
+
+        function toggle_info(){
+            $('.info').removeClass('spaceInLeft magictime')            
+            $('.info').addClass('spaceOutLeft magictime')
+            if($('.info p.a').hasClass('show')){
+                $('.info p.b').addClass('show');
+                $('.info p.a').removeClass('show');
+            }else{
+                $('.info p.a').addClass('show');
+                $('.info p.b').removeClass('show');
+            }
+            setTimeout(function(){
+                $('.info').removeClass('spaceOutLeft magictime')
+                $('.info').addClass('spaceInLeft magictime')
+            },250);
+        }
+        
+        checkRadio()
+    </script>
+</html>

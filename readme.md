@@ -44,7 +44,7 @@ Ainsi que depuis Chrome sur Android. (Baisser le nombre de cobayes pour ne pas t
 
 ## License
 
-This project is licensed under the GNU General Public License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the GNU General Public License - see the [LICENSE](LICENSE) file for details
 
 ## Remerciements
 

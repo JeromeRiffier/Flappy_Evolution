@@ -1,0 +1,137 @@
+body{
+    background-color: #fad390;
+    overflow: hidden;
+}
+body *{
+    font-family: 'Roboto Condensed', sans-serif;
+}
+
+.p5Canvas {
+    position: relative;
+	display: block;
+    margin: auto;
+    margin-top: 190px;
+    box-shadow: 10px 13px 10px 2px #e58e26;
+}
+
+.titre h1 {
+    font-size: 45px;
+    color: #000;
+    font-weight: 800;
+    font-family: monospace;
+    text-decoration: underline;
+    left: 122px;
+    top: 35px;
+    position: absolute;
+}
+
+.info {
+    position: absolute;
+    top: 74%;
+    left: 0;
+    width: 20%;
+    inline-size: 788px;
+    padding: 7px 7px 7px 27px;    
+    color: white;
+    background-color: #60a3bc;
+    box-shadow: 6px 6px 10px 2px #423d5d;
+    /*border-radius: 0px 10px 10px 0px;*/
+    text-align: left;
+
+}
+.info p{
+    font-size: 16px;
+    font-weight: 500;
+    font-family: monospace;
+    letter-spacing: -1px;
+    line-height: 20px;
+}
+.info p.a.show {
+    display: block;
+}
+.info p.b.show {
+    display: block;
+}
+.info p.a {
+    display: none;
+}
+.info p.b {
+    display: none;
+}
+
+
+.stats{
+    position: absolute;
+    top: 74%;
+    right: 0;
+    width: 50%;
+    padding: 7px 7px 7px 27px;
+    background-color: #4a69bd;
+    color: white;
+    box-shadow: 10px 6px 10px 2px #423d5d;
+    /*border-radius: 10px 0px 0px 10px;*/
+    text-align: left;
+    min-height: 70px;
+    max-height: 200px;
+    overflow-y: scroll;
+}
+.stats td {
+    border-right: 2px dashed #60a3bc;
+    border-left: 2px dashed #60a3bc;
+    border-bottom: 2px solid #60a3bc;
+    text-align: left;
+    padding: 5px;
+    max-width: 50px;
+    overflow: hidden;
+  }
+
+.stats th{
+    padding: 8px;
+    padding-right: 20px;
+    background-color: #0c2461;
+    font-size: 14px;
+    font-weight: 100;
+    line-height: 12px;
+}
+
+.controls{
+    position: absolute;
+    right: 00px;
+    top: 35px;
+    width: 30%;
+    padding: 12px 7px 7px 27px;
+    background-color: #6a89cc;
+    box-shadow: 7px 6px 10px 2px #423d5d;
+    /*border-radius: 10px 0px 0px 10px;*/
+}
+
+.col {
+    position: relative;
+    display: inline-block;
+    width: 49%;
+    vertical-align: middle;
+}
+
+.controls button {
+    width: 90%;
+    margin-bottom: 10px;
+    -webkit-appearance: none;
+    background: #1e3799;
+    color: white;
+    border: none;
+}
+.controls span{
+    color : white;
+}
+
+.controls input[type=text]{
+    width: 50px;
+    margin-bottom: 6px;
+}
+
+.controls input[type=radio]{
+    -webkit-appearance: checkbox;
+}
+.dif {
+    margin-bottom: 10px;
+}

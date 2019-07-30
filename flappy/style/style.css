@@ -62,7 +62,13 @@ body *{
 .info p.b {
     display: none;
 }
-
+.info span {
+    padding: 5px;
+    position: relative;
+    margin-left: 493px;
+    border-top: solid 2px #1e3799;
+    border-left: solid 2px #1e3799;
+}
 
 .stats{
     position: absolute;

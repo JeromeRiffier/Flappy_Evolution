@@ -5,8 +5,12 @@ body{
 body *{
     font-family: 'Roboto Condensed', sans-serif;
 }
+.info, .titre, .controls, .stats{
+    z-index: 1;
+}
 
 .p5Canvas {
+    z-index: 0;
     position: relative;
 	display: block;
     margin: auto;

@@ -80,15 +80,18 @@
                 <button onclick="battleHumanIa()">Sauver le meilleur / Humain VS IA</button>
             </div>
             <div class="col" style="text-align: left;">
-                <span>Nombre de cobailles: </span><input id="nbr"type="text" placeHolder ='' ></br>
+                <span>Nombre de cobailles : </span><input id="nbr"type="text" placeHolder ='' ></br>
+                <span>Tôt de mutation :</span><input id="mutation"type="text" placeHolder ='' ></br>
                 <div class="dif"><span>Facile:</span><input type="radio" name="difficulty" value="easy"> <span>Medium:</span><input type="radio" name="difficulty" value="medium"> <span>Difficile:</span><input type="radio" name="difficulty" value="hard"></div>
                 <button onclick="apply()">Appliquer</button>
         </div>
     </div>
+   
 </body>
     <script>
     //Script en rapport avec l'interface de la page 
         $('#nbr').attr('placeholder', total_cobaye);
+        $('#mutation').attr('placeholder', mutation_rate);
         //Gestion affichage des stat's
         function actualise_stat (gen, best_score, average_score){
             var progression = [];
@@ -117,11 +120,11 @@
             var last_avg = $("table tr:last td:eq(4)").html()
             var first_avg = $("table tr:eq(1) td:eq(4)").html()
 
-            var prog_best = (100/last_best)*best_score
-            var prog_best_from_start = (100/first_best)*best_score
+            var prog_best = ((100/last_best)*best_score)-100
+            var prog_best_from_start = ((100/first_best)*best_score)-100
 
-            var prog_avg = (100/last_avg)*average_score
-            var prog_avg_from_start = (100/first_avg)*average_score
+            var prog_avg = ((100/last_avg)*average_score)-100
+            var prog_avg_from_start = ((100/first_avg)*average_score)-100
 
             return [int(prog_best),int(prog_best_from_start), int(prog_avg),int(prog_avg_from_start)];
         }
@@ -133,13 +136,17 @@
         function checkRadio(){
             $('input[type=radio]:first').prop("checked", true);
         }
-        
         function apply(){
             //Le nombre de caboye voulus
             if($('#nbr').val() > 0){
                 total_cobaye = $('#nbr').val();
             }else{
                 total_cobaye =150;
+            }
+            if($('#mutation').val() > 0){
+                mutation_rate = $('#mutation').val();
+            }else{
+                mutation_rate =0.1;
             }
             //La difficulté voulu (varie entre 0 et 2)
             var difficulty;
@@ -153,12 +160,10 @@
             $('table tr > td').remove(); 
             full_reset(total_cobaye, difficulty);
         }
-
         function factory_reset(){
             $('table tr > td').remove(); 
             full_reset();
         }
-
         function toggle_info(){
             $('.info').removeClass('spaceInLeft magictime')            
             $('.info').addClass('spaceOutLeft magictime')

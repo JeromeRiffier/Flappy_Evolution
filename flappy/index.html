@@ -5,17 +5,19 @@
 
     <title>Project Flappy IA</title>
     <meta charset="utf-8">
-
+    <!-- Style + FONT -->
     <link rel="stylesheet" href="style/style.css">
     <link rel="stylesheet" href="style/magic.css">
     <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed&display=swap" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-
-    <script type="text/javascript" src="game/sketch.js"></script>
-    <script type="text/javascript" src="game/evolution.js"></script>
+    <!-- Librairies -->
     <script type="text/javascript" src="P5/p5.js"></script>
     <script type="text/javascript" src="tensorflow.js/tf.js"></script>
-
+    <script type="text/javascript" src="FileSaver.js/FileSaver.min.js"></script>
+    <!-- Jeux et IA -->    
+    <script type="text/javascript" src="game/sketch.js"></script>
+    <script type="text/javascript" src="game/evolution.js"></script>
+    <script type="text/javascript" src="game/saver.js"></script>
 </head>
 
 <body>
@@ -27,7 +29,7 @@
             - Ce projet consiste à découvrir les bases du machine Learning via la neuro-évolution. </br>
             - A chaque génération on génère 150 joueurs. La première génération et configuré de façon aléatoire.</br>
             - Puis à chaque nouvelle génération, on sélectionne le meilleur joueur pour le dupliquer 150 fois</br>
-            - Enfin on fait "muter" ces configurations aléatoirement (dans l'ordre d'environ 1%).</br>
+            - Enfin on fait "muter" ces configurations aléatoirement (dans l'ordre d'environ 10%).</br>
             - Le meilleur joueur du tour précèdent est cloné à l'identique et s'affiche en rouge</br>
             - Si vous tentez de vous battre contre l’IA, le meilleur joueur de la génération précédente sera sélectionné. Si vous êtes contre la première génération le jeu sélectionnera un joueur aléatoire</br>
         </p>
@@ -41,7 +43,8 @@
         </p>
         <span>Cliquer sur ce panneaux pour plus de détails</span>
     </div>
-    <div class="stats">
+    <div class="stats little">
+        <button class="plus" onclick="toggle_stats()"><i class="arrow up"></i><i class="arrow up center"></i><i class="arrow up"></i></button>
         <table>
             <tr>
                 <th>
@@ -73,22 +76,51 @@
               
         </table>
     </div>
-    <div class="controls">
+    <div class="controls little">
+        <button class="plus" onclick="toggle_controls()"><i class="arrow up"></i><i class="arrow up center"></i><i class="arrow up"></i></button>
         <div class="col">
-                <button type="start" onclick="playPause()">Play / Pause</button></br>
-                <button type="reset" onclick="factory_reset()">Recommencer</button></br>
-                <button onclick="battleHumanIa()">Sauver le meilleur / Humain VS IA</button>
-            </div>
-            <div class="col" style="text-align: left;">
-                <span>Nombre de cobailles : </span><input id="nbr"type="text" placeHolder ='' ></br>
-                <span>Tôt de mutation :</span><input id="mutation"type="text" placeHolder ='' ></br>
-                <div class="dif"><span>Facile:</span><input type="radio" name="difficulty" value="easy"> <span>Medium:</span><input type="radio" name="difficulty" value="medium"> <span>Difficile:</span><input type="radio" name="difficulty" value="hard"></div>
-                <button onclick="apply()">Appliquer</button>
+            <button type="start" onclick="playPause()" style="margin-top: 15px;">Play / Pause</button></br>
+            <button type="reset" onclick="factory_reset()">Recommencer</button></br>
+            <button class="d-none" onclick="battleHumanIa()">Sauver le meilleur / Humain VS IA</button>
+            <input class="d-none" type="file" multiple id="selectFiles" value="Import" /><label for="selectFiles" class="label-import">Selectionner les champions</label>
+            <button id="import" onclick="import_JSON_from_client()">Importer</button>
+            <button type="" onclick="afficher_champion()">Voir les champions</button></br>
         </div>
+        <div class="col" style="padding-left: 18px;">
+            <button type="" onclick="store_a_player(select_best_actual_player())" style="margin-top: 15px;">Sauver champion actuel</button></br>
+            <button type="" onclick="store_a_player(select_best_last_player())">Sauver ex-champion (rouge)</button></br>
+            <button type="" onclick="championnat()">Championnat</button></br>
+            <button class="" onclick="save_json_file()" onclick="">Exporter les champions</button></br>
+            <button class="d-none"  type="" onclick="">1VS1</button></br>
+        </div>
+        <div class="col" style="text-align: left;padding-left: 10px;">
+            <span>Nombre de cobailles : </span><input id="nbr"type="text" placeHolder ='' style="margin-top: 13px;"></br>
+            <span>Taux de mutation :</span><input id="mutation"type="text" placeHolder ='' ></br>
+            <div class="dif"><span>Facile:</span><input type="radio" name="difficulty" value="easy"> <span>Medium:</span><input type="radio" name="difficulty" value="medium"> <span>Difficile:</span><input type="radio" name="difficulty" value="hard"></div>
+            <button onclick="apply()">Appliquer</button>
+        </div>
+    </div>
+    <div class="modal off">
+        <h2>Liste des champions</h2>
+        <table>
+                <tr>
+                    <th>
+                        Nom
+                    </th>
+                    <th>
+                        ID
+                    </th>
+                    <th>
+                        Battle
+                    </th>
+                </tr>
+        </table>
     </div>
    
 </body>
     <script>
+    console.info("Il est conseiller de faire tournée cette page depuis un serveur (même en local) pour éviter les problemes lié à 'Access-Control-Allow-Origin'")
+    console.info("j'utilise l'application 'Web Server' pour Chrome, pour mes test en local")
     //Script en rapport avec l'interface de la page 
         $('#nbr').attr('placeholder', total_cobaye);
         $('#mutation').attr('placeholder', mutation_rate);
@@ -111,14 +143,39 @@
                 html_new_line += '<td>' + data[key] + '</td>';
                 }
             html_new_line += '</tr>';
-            $('table').append(html_new_line)
+            $('.stats table').append(html_new_line)
         }
-        function calculate_progression (best_score, average_score){
-            var last_best = $("table tr:last td:eq(1)").html()
-            var first_best = $("table tr:eq(1) td:eq(1)").html()
 
-            var last_avg = $("table tr:last td:eq(4)").html()
-            var first_avg = $("table tr:eq(1) td:eq(4)").html()
+        function afficher_champion(){
+            if (!$('.modal').hasClass('off')) {
+                $('.modal').addClass('off')
+                $(".modal table").find("tr:gt(0)").remove();
+            }else{
+                $('.modal').removeClass('off')
+                if (json_players == ""){return}
+                var html_new_line;
+                for (let index = 0; index < json_players.players.length; index++) {
+                    html_new_line += '<tr>';
+                    html_new_line += '<td>' + json_players.players[index].name + '</td>';
+                    html_new_line += '<td>' + json_players.players[index].id + '</td>';
+                    html_new_line += '<td><button onClick="masquer_champion('+json_players.players[index].id+')">1VS1</button></td>';
+                    html_new_line += '</tr>';
+                }   
+                $('.modal table').append(html_new_line)
+            }
+        }
+        function masquer_champion(id){
+            $('.modal').addClass('off');
+            VS(id)
+            return false;
+        }
+
+        function calculate_progression (best_score, average_score){
+            var last_best = $(".stats table tr:last td:eq(1)").html()
+            var first_best = $(".stats table tr:eq(1) td:eq(1)").html()
+
+            var last_avg = $(".stats table tr:last td:eq(4)").html()
+            var first_avg = $(".stats table tr:eq(1) td:eq(4)").html()
 
             var prog_best = ((100/last_best)*best_score)-100
             var prog_best_from_start = ((100/first_best)*best_score)-100
@@ -128,7 +185,6 @@
 
             return [int(prog_best),int(prog_best_from_start), int(prog_avg),int(prog_avg_from_start)];
         }
-
         //Gestion des boutons de controles
         function playPause(){
             running = !running
@@ -178,6 +234,24 @@
                 $('.info').removeClass('spaceOutLeft magictime')
                 $('.info').addClass('spaceInLeft magictime')
             },250);
+        }
+        function toggle_controls (){
+            if ($('.controls').hasClass('little')) {
+                $('.controls').removeClass('little')
+                $('.controls').addClass('medium')
+            }else if ($('.controls').hasClass('medium')) {
+                $('.controls').removeClass('medium')
+                $('.controls').addClass()
+            }else{
+                $('.controls').addClass('little')
+            }
+        }
+        function toggle_stats (){
+            if ($('.stats').hasClass('little')) {
+                $('.stats').removeClass('little')
+            }else{
+                $('.stats').addClass('little')
+            }
         }
         
         checkRadio()

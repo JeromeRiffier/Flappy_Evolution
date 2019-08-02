@@ -1,4 +1,4 @@
-let total_cobaye = 150;
+let total_cobaye = 20;
 
 let best_score_storage = [];
 let obstacles = [];
@@ -9,10 +9,14 @@ let base_hole_size = 100;
 let base_space_bewteen = 120;
 let counter = 0;
 let running = false;
-//   Game engine
 
+const proposition_name = ['Michel Boujenah','Michel Denisot','Michel Houellebecq','Michel Onfray','Michel Platini','Michel Polnareff','Michel Sardou','Michel Galabru','Michel Cymes','Michel Drucker','Michel Leeb','M. KOHLER','Mme de BAYSER','M. NUSSBAUMER','M. ZAJDENWEBER']
+
+
+
+//   Game engine
 function setup() {
-    frameRate(60)
+    frameRate(60) 
     tf.setBackend('cpu');
     level = new level()
     createCanvas(level.width, level.height)
@@ -49,7 +53,10 @@ function draw() {
 //------------------
 class player {
     constructor (ia = true, brain ){
-        this.wasBest = false
+        this.wasBest = false,
+        this.name = Math.random().toString(36).substring(2, 15),
+        //Id basé sur le timestamp pour ne pas avoir 2X le même quoi qu'il arrive:
+        this.id = Date.now();
         
         //Position
         this.y = 0,
@@ -75,7 +82,6 @@ class player {
         }
     }
     //IA Zone  ------  A Aménager !!!!!
-    
     think(obstacles) {
         // Find the closest pipe
         let closest = obstacles[0];
@@ -92,8 +98,8 @@ class player {
         }
         */
        let inputs = [];
-       inputs[0] = this.y - closest.up_height;                      //<----  Diff de hauteur entre player.y et Obstacle_top
-       inputs[1] = this.y - closest.down_height;                   //<----  Diff de hauteur entre player.y et Obstacle_bottom
+       inputs[0] = this.y - int(closest.up_height);                      //<----  Diff de hauteur entre player.y et Obstacle_top
+       inputs[1] = this.y - int(closest.down_height);                   //<----  Diff de hauteur entre player.y et Obstacle_bottom
        inputs[2] = level.height - this.y;                         //<----  Distance par rapport au sol ?
        inputs[3] = closest.x - this.x;                           //<----  Distance entre player.x et obstacle[0].x
        inputs[4] = this.up_speed -this.up_speed ;               //<----  Vitesse vertical actuel
@@ -103,14 +109,14 @@ class player {
                this.move_up();
             }
         }
-        dispose() {
-            this.brain.dispose();
-        }
-        mutate() {
-            this.brain.mutate(mutation_rate);
-        }
-        //Fin de ZONE IA-----    !!!!!!!!!!!!!!!!!!!!
-        
+    dispose() {
+        this.brain.dispose();
+    }
+    mutate() {
+        this.brain.mutate(mutation_rate);
+    }
+    
+    //Fin de ZONE IA-----    !!!!!!!!!!!!!!!!!!!!    
     update(){
         //this.move()
         if (keyIsPressed === true) {
@@ -295,11 +301,7 @@ class level {
         if (this.player_alive > 0 && this.nbr_joueur_au_sol < players.length) {
             this.time ++
             
-            //Le conteur de parties
-            fill(100, 100, 100)
-            textSize(60);
-            textAlign(CENTER, CENTER);
-            text(counter, (this.width/2), (this.height/6));
+            
             //Gestion  des valeurs du Player
             for (let index = 0; index < players.length; index++){
                 players[index].update()            
@@ -308,14 +310,14 @@ class level {
             //Gestion des valeurs des obstacles
             //on créer un nouvelle obstacle toute les 120 frame = 2sec (60fps)
             if (this.time % int(this.space_between_obstacle) == 0) {
-                obstacles.push(new obtacle(this.hole_size))
+                obstacles.push(new obtacle(int(this.hole_size)))
                 if (this.space_between_obstacle > 100){
-                    this.space_between_obstacle -= 1
+                    this.space_between_obstacle -= 2
                 }else if (this.space_between_obstacle >90) {
                     this.space_between_obstacle -= 1
                 }
-                if (this.time > 500 && this.hole_size >50) {
-                    this.hole_size -= 1
+                if (this.time > 500 && this.hole_size >35) {
+                    this.hole_size -= 0.2
                 }
             }
             
@@ -328,6 +330,7 @@ class level {
                 obstacles[index].move()
                 obstacles[index].show()
             }
+            this.affichage_score()
         }else{
             //this.game_over()
         }
@@ -347,7 +350,23 @@ class level {
         }
 
     }
-
+    affichage_score(){
+        //Le conteur de parties
+            fill(100, 100, 100)
+            textSize(60);
+            textAlign(CENTER, CENTER);
+            text(counter, (this.width/2), (this.height/6)-20);
+        //Le compteur de joueur encore en vie
+            fill(100, 100, 100)
+            textSize(20);
+            textAlign(LEFT, CENTER);
+            text("Nombre de joueur :"+ this.player_alive, this.width-250, 30);
+        //Affichage score max
+            fill(220, 220, 220)
+            textSize(20);
+            textAlign(LEFT, CENTER);
+            text("Score :"+ this.time, this.width-250, this.height-40);
+    }
     create_player(nbr){
         var nbr_players_before_this = players.length
         for (let index = 0; index < nbr; index++) {
@@ -426,7 +445,7 @@ function draw_background(start = false){
 
 //Function for evolution
 function nextGeneration() {
-    actualBestPlayer = getLastBest();
+    actualBestPlayer = get_last_best();
     actualise_stat (counter, level.time, calculateAverageScore());
     calculateFitness();
     for (let i = 0; i < total_cobaye-1; i++) {
@@ -449,12 +468,13 @@ function childBest() {
     return child;
 }
 
-function getLastBest() {
+function get_last_best() {
     //trouver le meilleur et le cloner SANS le muter
     var res = Math.max.apply(Math, saved_players.map(function(player) { return player.score; }))
     var player_temp = saved_players.find(function(player){ return player.score == res; })
     let child = new player(true, player_temp.brain);
     child.wasBest = true
+    
     return child;
 }
 
@@ -512,7 +532,6 @@ function battleHumanIa(difficulty = '1') {
 
 }
 
-
 function full_reset(nbr_total = 150, difficulty = '1'){
     total_cobaye = nbr_total;
     //difficulty == '0' => FACILE             difficulty == '1'=> Medium          difficulty == '2' => hard
@@ -541,7 +560,9 @@ function full_reset(nbr_total = 150, difficulty = '1'){
 }
 
 function mouseClicked(){
+    if(!$('.modal').hasClass('off')){ return }
     if (mouseX > 0 && mouseX < level.width  && mouseY  > 0 && mouseY < level.height) {
         running = !running
     }
 }
+

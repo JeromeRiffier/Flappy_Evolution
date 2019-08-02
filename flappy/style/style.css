@@ -5,6 +5,9 @@ body{
 body *{
     font-family: 'Roboto Condensed', sans-serif;
 }
+.d-none{
+    display: none;
+}
 .info, .titre, .controls, .stats{
     z-index: 1;
 }
@@ -71,10 +74,11 @@ body *{
 }
 
 .stats{
+    transition-duration: .9s;
     position: absolute;
     top: 74%;
     right: 0;
-    width: 50%;
+    width: 48%;
     padding: 7px 7px 7px 27px;
     background-color: #4a69bd;
     color: white;
@@ -82,6 +86,13 @@ body *{
     /*border-radius: 10px 0px 0px 10px;*/
     text-align: left;
     min-height: 70px;
+    max-height: 200px;
+}
+.stats.little {
+    right: -45.5%;
+}
+
+.stats table {
     max-height: 200px;
     overflow-y: scroll;
 }
@@ -104,25 +115,56 @@ body *{
     line-height: 12px;
 }
 
-.controls{
+.controls {
+    transition-duration: .5s;
     position: absolute;
     right: 00px;
-    top: 35px;
-    width: 30%;
+    top: 10px;
+    height: 140px;
+    width: 40%;
     padding: 12px 7px 7px 27px;
     background-color: #6a89cc;
     box-shadow: 7px 6px 10px 2px #423d5d;
-    /*border-radius: 10px 0px 0px 10px;*/
+    /* border-radius: 10px 0px 0px 10px; */
 }
+.controls.little {
+    right: -28%;
+}
+.controls.medium {
+    right: -15%;
+}
+
+
+.label-import {
+    display: inline-block;
+    cursor: pointer;
+    width: 55%;
+    margin-bottom: 7px;
+    -webkit-appearance: none;
+    background: #1e3799;
+    color: white;
+    padding: 1px 0px;
+    text-align: center;
+    vertical-align: middle;
+    height: 21px;
+    line-height: 21px;
+    font-size: 11px;
+    font-weight: 100;
+}
+
 
 .col {
     position: relative;
     display: inline-block;
-    width: 49%;
+    height: 100%;
+    width: 30%;
+    padding-left: 5px;
+    padding-right: 5px;
     vertical-align: middle;
+    border-right: dotted 2px #0c2461;
 }
 
-.controls button {
+ button {
     width: 90%;
     margin-bottom: 10px;
     -webkit-appearance: none;
@@ -130,18 +172,148 @@ body *{
     color: white;
     border: none;
 }
-.controls span{
+ span{
+    margin-left: 3px;   
+    margin-right: 3px;
     color : white;
+    font-size: 14px;
+    vertical-align: text-top;
 }
 
-.controls input[type=text]{
+ input[type=text]{
     width: 50px;
     margin-bottom: 6px;
 }
 
-.controls input[type=radio]{
+ input[type=radio]{
     -webkit-appearance: checkbox;
+}
+ button.plus {
+    position: absolute;
+    transform: rotateZ(-90deg);
+    z-index: -1;
+    top: 56px;
+    left: -50px;
+    height: 30px;
+    width: 70px;
+    box-shadow: inset 4px -2px 8px 0px #9485e473;
+}
+.stats button.plus {
+    top: 50%;
+    transform: translateY(-50%) rotateZ(-90deg);
+}
+
+#import{
+    width: 33%;
+    vertical-align: middle;
+    height: 23px;
+    line-height: 23px;
+    font-size: 12px;
+    margin-bottom: 7px;
 }
 .dif {
     margin-bottom: 10px;
 }
+
+.label-import:hover, button:hover{
+    background: #2c46af;
+    transition-duration: .2s;
+}
+
+.modal {
+    position: absolute;
+    display: block;
+    z-index: 2;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    height: 60%;
+    width: 60%;
+    background: #000000b5;
+    border: none;
+    box-shadow: 4px 5px 10px 2px #000000b5;
+}
+.modal.off{
+   display: none; 
+}
+.modal * {
+    font-family: monospace;
+    text-align: center;
+}
+.modal h2 {
+    text-align: center;
+    color: white;
+    font-size: 35px;
+    font-family: monospace;
+    text-decoration: underline;
+    margin-top: 10px;
+}
+.modal table {
+    width: 90%;
+    margin-left: 5%;
+    background: #ffffff4f;
+    color: white;
+    font-size: 18px;
+}
+
+
+
+
+/*Animation fleche .controls*/
+
+@keyframes hello {
+    0% {margin-bottom: 0px;}
+
+    1% {margin-bottom: 3px;}
+    2% {margin-bottom: 0px;}
+    3% {margin-bottom: 3px;}
+    4% {margin-bottom: 0px;}
+    5% {margin-bottom: 3px;}
+    6% {margin-bottom: 0px;}
+    7% {margin-bottom: 3px;}
+    8% {margin-bottom: 0px;}
+
+
+    100% {margin-bottom: 0px}
+  }
+
+  
+
+i {
+    border: solid white;
+    border-width: 0 1px 1px 0;
+    display: inline-block;
+    padding: 3px;
+    vertical-align: bottom;
+    margin: 2px;
+    transition-duration: .3s;
+    animation-name: hello;
+    animation-delay: 2s;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in;
+}
+
+.medium i.arrow.up {
+    opacity: 0;
+}
+.medium i.arrow.up.center {
+    opacity: 1;
+    margin-bottom: 0px;
+    
+    border-width: 0 3px 3px 0;
+}
+ i.arrow.up{
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+}
+.little i.arrow.up, .medium i.arrow.up {
+    transform: rotate(-135deg);
+    -webkit-transform: rotate(-135deg);
+}
+
+ i.center {
+    opacity: 1;
+    animation-delay: 0s
+}
+

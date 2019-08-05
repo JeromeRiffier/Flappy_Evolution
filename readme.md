@@ -17,7 +17,7 @@ Les librairies utilisées sont : P5.js, TensorFlow.js, jquery ainsi que magic.cs
 
 Vous pouvez changer :
 
-- le nombre de "cobayes" pour alléger le processeur ou accélérer l'apprentissage (régler a 150 par défaut)
+- le nombre de "cobayes" pour alléger le processeur ou accélérer l'apprentissage (régler a 20 par défaut)
 - La difficulté du niveau. Cela modifiera la taille du passage dans les obstacles ainsi que leur fréquence
 
 Une fois que vous jugez l'entrainement concluant vous pouvez tenter de vous battre contre la machine via "Sauver le meilleur / Humain VS IA".
@@ -30,6 +30,18 @@ Le projet devrait fonctionner dans tous les navigateurs récents.
 Il a été testé depuis un pc sous Windows 10 dans Chrome, Firefox et Edge. 
 Ainsi que depuis Chrome sur Android. (Baisser le nombre de cobayes pour ne pas trop chargé le processeur du mobile).
 
+## Sauvegarde
+
+Il est possible d'enregistrer les joueurs entrainé via "sauver les champions" puis "Exporter les champions"
+Cela va générer plusieurs fichier d'export :
+    - Players.json : Ce fichier contient les classes de tout les joueurs enregistré mais pas leur "cerveau".
+
+Les "cerveaux" serons stocker individuelement dans des fichiers .JSON + .bin (le json contient le model et le .bin contient les "weights" des neuronnes pour ces model)
+Le noms de ces fichiers est basé sur le timestamp au moment de la creation pour eviter tout doublons, exemple : 
+    - 1564998157945.json + 1564998157945.wights.bin
+
+Pour les rechargers dans le jeux, il suffit de tous les sélectionner (players + models) puis de les importer. 
+Ils s'ajouteron aux models déjà stocker si il y'en as.
 
 ## Creé avec
 
